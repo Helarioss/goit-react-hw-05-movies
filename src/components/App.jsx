@@ -2,7 +2,7 @@ import Home from 'Pages/Home';
 import { MovieDetails } from 'Pages/MovieDetails/MovieDetails';
 import { Reviews } from 'Pages/Reviews/Reviews';
 import { Cast } from 'Pages/Cast/Cast';
-import { Routes, Route, Outlet } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import { SharedLayout } from './SharedLayout';
 import { Movies } from 'Pages/Movies';
 export const App = () => {
