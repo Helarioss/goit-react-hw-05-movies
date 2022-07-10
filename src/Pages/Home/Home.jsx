@@ -1,65 +1,65 @@
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useFetchMovies, STATUS } from 'hooks/useFetchMovies';
 import { getTrendingMovies } from 'services/api';
+import { List, MovieLink, Poster, MovieTitle, Title } from './Home.styled';
 
-export const Home = () => {
-  const { movies, status, error } = useFetchMovies(getTrendingMovies);
+export const STATUS = {
+  IDLE: 'idle',
+  PENDING: 'pending',
+  RESOLVED: 'resolved',
+  REJECTED: 'rejected',
+};
+
+export const useFetchMovies = () => {
+  const [movies, setMovies] = useState([]);
+  const [status, setStatus] = useState(STATUS.IDLE);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    async function fetchMovies() {
+      setStatus(STATUS.PENDING);
+      try {
+        const movies = await getTrendingMovies();
+        setMovies(movies);
+        setStatus(STATUS.RESOLVED);
+      } catch (error) {
+        setError(error);
+        setStatus(STATUS.REJECTED);
+      }
+    }
+
+    fetchMovies();
+  }, []);
+
+  return { movies, status, error };
+};
+
+const Home = () => {
+  const { movies, status, error } = useFetchMovies();
   return (
     <>
-      <h1>Trending today</h1>
+      <Title>Trending today</Title>
       {status === STATUS.PENDING && <p>Загрузка</p>}
+
+      {status === STATUS.REJECTED && <h1>Error: {error.message}</h1>}
+
       {status === STATUS.RESOLVED && (
-        <ul>
-          {movies.map(({ title, name, id }) => (
+        <List>
+          {movies.map(({ title, poster_path, name, id }) => (
             <li key={id}>
-              <Link to={`/movies/${id}`}>{title ?? name}</Link>
+              <MovieLink to={`/movies/${id}`}>
+                <Poster
+                  src={`https://image.tmdb.org/t/p/w500/${poster_path}`}
+                  alt={`${title}'s poster`}
+                ></Poster>
+                <MovieTitle>{title ?? name}</MovieTitle>
+              </MovieLink>
             </li>
           ))}
-        </ul>
+        </List>
       )}
-      {status === STATUS.REJECTED && <h1>Error: {error.message}</h1>}
     </>
   );
 };
 
-// export const Home = () => {
-//   const [movies, setMovies] = useState([]);
-//   const [status, setStatus] = useState(STATUS.IDLE);
-//   const [error, setError] = useState(null);
-
-//   useEffect(() => {
-//     async function fetchMovies() {
-//       setStatus(STATUS.PENDING);
-//       try {
-//         const movies = await getTrendingMovies();
-//         setMovies(movies);
-//         setStatus(STATUS.RESOLVED);
-//         console.log(movies);
-//       } catch (error) {
-//         setError(error);
-//         setStatus(STATUS.REJECTED);
-//       }
-//     }
-//     fetchMovies();
-//   }, []);
-
-//   return (
-//     <>
-//       <h1>Trending today</h1>
-
-//       {status === STATUS.PENDING && <p>Загрузка</p>}
-
-//       {status === STATUS.RESOLVED && (
-//         <ul>
-//           {movies.map(({ original_title, name, id }) => (
-//             <li key={id}>
-//               <Link to={`/movies/${id}`}>{original_title ?? name}</Link>
-//             </li>
-//           ))}
-//         </ul>
-//       )}
-
-//       {status === STATUS.REJECTED && <h1>Ошибка: {error.message}</h1>}
-//     </>
-//   );
-// };
+export default Home;

@@ -17,3 +17,7 @@ export const Link = styled(NavLink)`
     color: red;
   }
 `;
+
+export const Main = styled.main`
+  padding: 30px;
+`;

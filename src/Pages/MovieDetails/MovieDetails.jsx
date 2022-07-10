@@ -1,7 +1,7 @@
-import { useFetchMovies } from 'hooks/useFetchMovies';
 import { useEffect, useState } from 'react';
-import { Link, Outlet, useParams } from 'react-router-dom';
+import { Link, Outlet, useLocation, useParams } from 'react-router-dom';
 import { getMovieById } from 'services/api';
+import { BaseInformation, Description, Image } from './MovieDetails.styled';
 
 export const STATUS = {
   IDLE: 'idle',
@@ -11,7 +11,7 @@ export const STATUS = {
 };
 
 export const useFetchMovieById = id => {
-  const [movies, setMovies] = useState([]);
+  const [movie, setMovie] = useState([]);
   const [status, setStatus] = useState(STATUS.IDLE);
   const [error, setError] = useState(null);
 
@@ -19,10 +19,9 @@ export const useFetchMovieById = id => {
     async function fetchMovies() {
       setStatus(STATUS.PENDING);
       try {
-        const movies = await getMovieById(id);
-        setMovies(movies);
+        const movie = await getMovieById(id);
+        setMovie(movie);
         setStatus(STATUS.RESOLVED);
-        console.log(movies);
       } catch (error) {
         setError(error);
         setStatus(STATUS.REJECTED);
@@ -31,27 +30,22 @@ export const useFetchMovieById = id => {
     fetchMovies();
   }, [id]);
 
-  return { movies, status, error };
+  return { movie, status, error };
 };
 
 export const MovieDetails = () => {
   const { movieId } = useParams();
-  const {
-    movies: {
-      title,
-      poster_path,
-      overview,
-      genres,
-      release_date,
-      vote_average,
-    },
-    status,
-    error,
-  } = useFetchMovieById(movieId);
+  const location = useLocation();
+  const prevLocation = location?.state?.from ?? '/';
+
+  const { movie, status, error } = useFetchMovieById(movieId);
+
+  const { title, poster_path, overview, genres, release_date, vote_average } =
+    movie;
 
   return (
     <>
-      <Link to="/">Go back</Link>
+      <Link to={prevLocation}>Go back</Link>
 
       {status === STATUS.PENDING && <div>Загрузка</div>}
 
@@ -59,26 +53,34 @@ export const MovieDetails = () => {
 
       {status === STATUS.RESOLVED && (
         <div>
-          <img
-            src={`https://image.tmdb.org/t/p/w500/${poster_path}`}
-            alt={`${title}'s poster`}
-          ></img>
-          <h1>
-            {title} ({release_date.slice(0, 4)})
-          </h1>
-          <p>User Score: {vote_average * 10}%</p>
-          <h2>Overview</h2>
-          <p>{overview}</p>
-          <h2>Genres</h2>
-          <p>{genres.map(({ name }) => name).join(', ')}</p>
+          <BaseInformation>
+            <Image
+              src={`https://image.tmdb.org/t/p/w500/${poster_path}`}
+              alt={`${title}'s poster`}
+            ></Image>
+            <Description>
+              <h1>
+                {title} ({release_date.slice(0, 4)})
+              </h1>
+              <p>User Score: {vote_average * 10}%</p>
+              <h2>Overview</h2>
+              <p>{overview}</p>
+              <h2>Genres</h2>
+              <p>{genres.map(({ name }) => name).join(', ')}</p>
+            </Description>
+          </BaseInformation>
           <hr />
           <h3>Additional information</h3>
           <ul>
             <li>
-              <Link to="cast">Cast</Link>
+              <Link to="cast" state={{ from: prevLocation }}>
+                Cast
+              </Link>
             </li>
             <li>
-              <Link to="reviews">Reviews</Link>
+              <Link to="reviews" state={{ from: prevLocation }}>
+                Reviews
+              </Link>
             </li>
           </ul>
           <hr />

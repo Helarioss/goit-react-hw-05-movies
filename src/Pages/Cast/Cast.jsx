@@ -21,7 +21,6 @@ export const useFetchCastById = id => {
         const cast = await getCastById(id);
         setCast(cast);
         setStatus(STATUS.RESOLVED);
-        console.log(cast);
       } catch (error) {
         setError(error);
         setStatus(STATUS.REJECTED);

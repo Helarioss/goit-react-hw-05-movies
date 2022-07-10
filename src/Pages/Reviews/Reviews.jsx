@@ -21,7 +21,6 @@ export const useFetchReviewsById = id => {
         const reviews = await getReviewsById(id);
         setReviews(reviews);
         setStatus(STATUS.RESOLVED);
-        console.log(reviews);
       } catch (error) {
         setError(error);
         setStatus(STATUS.REJECTED);

@@ -1,5 +1,5 @@
 import { Outlet } from 'react-router-dom';
-import { Nav, Link } from './SharedLayout.styled';
+import { Nav, Link, Main } from './SharedLayout.styled';
 
 export const SharedLayout = () => (
   <>
@@ -9,8 +9,8 @@ export const SharedLayout = () => (
         <Link to="/movies">Movies</Link>
       </Nav>
     </header>
-    <main>
+    <Main>
       <Outlet />
-    </main>
+    </Main>
   </>
 );
