@@ -1,3 +1,4 @@
+import { Spinner } from 'components/Spinner';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { getReviewsById } from 'services/api';
@@ -9,7 +10,7 @@ export const STATUS = {
   REJECTED: 'rejected',
 };
 
-export const useFetchReviewsById = id => {
+const useFetchReviewsById = id => {
   const [reviews, setReviews] = useState([]);
   const [status, setStatus] = useState(STATUS.IDLE);
   const [error, setError] = useState(null);
@@ -31,12 +32,13 @@ export const useFetchReviewsById = id => {
 
   return { reviews, status, error };
 };
-export const Reviews = () => {
+
+const Reviews = () => {
   const { movieId } = useParams();
   const { reviews, status, error } = useFetchReviewsById(movieId);
 
   if (status === STATUS.PENDING) {
-    return <div>Загрузка</div>;
+    return <Spinner />;
   }
 
   if (status === STATUS.REJECTED) {
@@ -58,3 +60,5 @@ export const Reviews = () => {
     </ul>
   );
 };
+
+export default Reviews;

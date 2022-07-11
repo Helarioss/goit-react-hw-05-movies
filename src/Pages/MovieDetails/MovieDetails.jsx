@@ -1,7 +1,16 @@
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { Link, Outlet, useLocation, useParams } from 'react-router-dom';
 import { getMovieById } from 'services/api';
-import { BaseInformation, Description, Image } from './MovieDetails.styled';
+
+import { BsFillArrowLeftCircleFill } from 'react-icons/bs';
+import NotFoundPage from 'Pages/NotFoundPage';
+import { Spinner } from 'components/Spinner';
+import {
+  BaseInformation,
+  ButtonBack,
+  Description,
+  Image,
+} from './MovieDetails.styled';
 
 export const STATUS = {
   IDLE: 'idle',
@@ -33,23 +42,26 @@ export const useFetchMovieById = id => {
   return { movie, status, error };
 };
 
-export const MovieDetails = () => {
+const MovieDetails = () => {
   const { movieId } = useParams();
   const location = useLocation();
   const prevLocation = location?.state?.from ?? '/';
 
-  const { movie, status, error } = useFetchMovieById(movieId);
+  const { movie, status } = useFetchMovieById(movieId);
 
   const { title, poster_path, overview, genres, release_date, vote_average } =
     movie;
 
   return (
     <>
-      <Link to={prevLocation}>Go back</Link>
+      <ButtonBack to={prevLocation}>
+        <BsFillArrowLeftCircleFill size={24} />
+        Go back
+      </ButtonBack>
 
-      {status === STATUS.PENDING && <div>Загрузка</div>}
+      {status === STATUS.PENDING && <Spinner />}
 
-      {status === STATUS.REJECTED && <div>Error: {error.message}</div>}
+      {status === STATUS.REJECTED && <NotFoundPage />}
 
       {status === STATUS.RESOLVED && (
         <div>
@@ -84,9 +96,13 @@ export const MovieDetails = () => {
             </li>
           </ul>
           <hr />
-          <Outlet />
+          <Suspense fallback={<Spinner />}>
+            <Outlet />
+          </Suspense>
         </div>
       )}
     </>
   );
 };
+
+export default MovieDetails;

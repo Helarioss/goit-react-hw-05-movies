@@ -1,6 +1,17 @@
 import { useEffect, useState } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import { searchMovies } from 'services/api';
+import { FaSearch } from 'react-icons/fa';
+import {
+  Form,
+  List,
+  MovieLink,
+  MovieTitle,
+  Poster,
+  SearchButton,
+  SearchInput,
+} from './Movies.styled';
+import { Spinner } from 'components/Spinner/Spinner';
 
 export const STATUS = {
   IDLE: 'idle',
@@ -34,7 +45,7 @@ const useSearchMovies = query => {
   return { movies, status, error };
 };
 
-export const Movies = () => {
+const Movies = () => {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const query = searchParams.get('query');
@@ -50,29 +61,37 @@ export const Movies = () => {
 
   return (
     <>
-      <form onSubmit={onSubmit}>
-        <input type="text" name="search" />
-        <button type="submit">Search</button>
-      </form>
+      <Form onSubmit={onSubmit}>
+        <SearchInput type="text" name="search" />
+        <SearchButton type="submit">
+          <FaSearch size={20} />
+        </SearchButton>
+      </Form>
 
-      {status === STATUS.PENDING && <p>Загрузка</p>}
+      {status === STATUS.PENDING && <Spinner />}
 
       {status === STATUS.REJECTED && <h1>Error: {error.message}</h1>}
 
       {status === STATUS.RESOLVED && (
-        <ul>
-          {movies.map(({ title, name, id }) => (
+        <List>
+          {movies.map(({ title, name, poster_path, id }) => (
             <li key={id}>
-              <Link
+              <MovieLink
                 to={`/movies/${id}`}
                 state={{ from: `/movies?query=${query}` }}
               >
-                {title ?? name}
-              </Link>
+                <Poster
+                  src={`https://image.tmdb.org/t/p/w500/${poster_path}`}
+                  alt={`${title}'s poster`}
+                ></Poster>
+                <MovieTitle>{title ?? name}</MovieTitle>
+              </MovieLink>
             </li>
           ))}
-        </ul>
+        </List>
       )}
     </>
   );
 };
+
+export default Movies;

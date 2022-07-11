@@ -1,10 +1,15 @@
-import Home from 'Pages/Home';
-import { MovieDetails } from 'Pages/MovieDetails/MovieDetails';
-import { Reviews } from 'Pages/Reviews/Reviews';
-import { Cast } from 'Pages/Cast/Cast';
+import { lazy } from 'react';
 import { Routes, Route } from 'react-router-dom';
+
 import { SharedLayout } from './SharedLayout';
-import { Movies } from 'Pages/Movies';
+
+const Home = lazy(() => import('../Pages/Home'));
+const Movies = lazy(() => import('Pages/Movies'));
+const MovieDetails = lazy(() => import('Pages/MovieDetails'));
+const Reviews = lazy(() => import('Pages/Reviews'));
+const Cast = lazy(() => import('Pages/Cast'));
+const NotFoundPage = lazy(() => import('Pages/NotFoundPage'));
+
 export const App = () => {
   return (
     <Routes>
@@ -15,8 +20,8 @@ export const App = () => {
           <Route path="cast" element={<Cast />} />
           <Route path="reviews" element={<Reviews />} />
         </Route>
+        <Route path="*" element={<NotFoundPage />} />
       </Route>
-      <Route path="*" element={<div>Not found</div>} />
     </Routes>
   );
 };

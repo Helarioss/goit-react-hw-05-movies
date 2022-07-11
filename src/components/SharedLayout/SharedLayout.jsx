@@ -1,3 +1,5 @@
+import { Spinner } from 'components/Spinner';
+import { Suspense } from 'react';
 import { Outlet } from 'react-router-dom';
 import { Nav, Link, Main } from './SharedLayout.styled';
 
@@ -9,8 +11,10 @@ export const SharedLayout = () => (
         <Link to="/movies">Movies</Link>
       </Nav>
     </header>
-    <Main>
-      <Outlet />
-    </Main>
+    <Suspense fallback={<Spinner />}>
+      <Main>
+        <Outlet />
+      </Main>
+    </Suspense>
   </>
 );

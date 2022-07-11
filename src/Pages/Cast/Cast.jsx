@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { getCastById } from 'services/api';
+import { Image, List } from './Cast.styled';
+import UnknowPerson from 'images/unknown-person.jpg';
+import { Spinner } from 'components/Spinner/Spinner';
 
 export const STATUS = {
   IDLE: 'idle',
@@ -31,12 +34,12 @@ export const useFetchCastById = id => {
 
   return { cast, status, error };
 };
-export const Cast = () => {
+const Cast = () => {
   const { movieId } = useParams();
   const { cast, status, error } = useFetchCastById(movieId);
 
   if (status === STATUS.PENDING) {
-    return <div>Загрузка</div>;
+    return <Spinner />;
   }
 
   if (status === STATUS.REJECTED) {
@@ -48,17 +51,23 @@ export const Cast = () => {
   }
 
   return (
-    <ul>
+    <List>
       {cast.map(({ name, profile_path, character, id }) => (
         <li key={id}>
-          <img
-            src={`https://image.tmdb.org/t/p/w500/${profile_path}`}
+          <Image
+            src={
+              profile_path
+                ? `https://image.tmdb.org/t/p/w500${profile_path}`
+                : UnknowPerson
+            }
             alt={`${name}`}
-          ></img>
+          ></Image>
           <h3>{name}</h3>
           <p>Character: {character || 'unknown'}</p>
         </li>
       ))}
-    </ul>
+    </List>
   );
 };
+
+export default Cast;

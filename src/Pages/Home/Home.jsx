@@ -1,3 +1,4 @@
+import { Spinner } from 'components/Spinner';
 import { useEffect, useState } from 'react';
 import { getTrendingMovies } from 'services/api';
 import { List, MovieLink, Poster, MovieTitle, Title } from './Home.styled';
@@ -9,7 +10,7 @@ export const STATUS = {
   REJECTED: 'rejected',
 };
 
-export const useFetchMovies = () => {
+const useFetchMovies = () => {
   const [movies, setMovies] = useState([]);
   const [status, setStatus] = useState(STATUS.IDLE);
   const [error, setError] = useState(null);
@@ -38,7 +39,7 @@ const Home = () => {
   return (
     <>
       <Title>Trending today</Title>
-      {status === STATUS.PENDING && <p>Загрузка</p>}
+      {status === STATUS.PENDING && <Spinner />}
 
       {status === STATUS.REJECTED && <h1>Error: {error.message}</h1>}
 
